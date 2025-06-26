@@ -1,0 +1,434 @@
+Enemy
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+
+    public static Action OnEndReached;
+
+
+    [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private Waypoint waypoint;
+
+
+    public Vector3 CurrentPointPosition => waypoint.GetWaypointPosition(_currentWaypointIndex);
+
+    private int _currentWaypointIndex;
+
+    //Script de chatgpt para mover al personaje con sus animaciones
+    private Animator _animator;
+    private Vector3 _lastPosition;
+
+
+    /// <summary>
+
+    /// Returns the current Point Position where this enemy needs to go
+    /// </summary>
+
+    private void Start()
+    {
+        //  _enemyHealth = GetComponent<EnemyHealth>();
+        //  _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        _currentWaypointIndex = 0;
+        //MoveSpeed = moveSpeed;
+        //_lastPointPosition = transform.position;
+
+
+        //Script de chatgpt para mover al personaje con sus animaciones
+        _animator = GetComponent<Animator>();
+        _currentWaypointIndex = 0;
+        _lastPosition = transform.position;
+    }
+
+    private void Update()
+    {
+        Move();
+        UpdateAnimationDirection();
+
+        //Rotate();
+
+        if (CurrentPointPositionReached())
+        {
+            UpdateCurrentPointIndex();
+        }
+        _lastPosition = transform.position;
+
+    }
+
+    private void Move()
+    {
+        transform.position = Vector3.MoveTowards(transform.position,
+            CurrentPointPosition, moveSpeed * Time.deltaTime);
+    }
+
+    private bool CurrentPointPositionReached()
+    {
+        float distanceToNextPointPosition = (transform.position - CurrentPointPosition).magnitude;
+        if (distanceToNextPointPosition < 0.1f)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void UpdateCurrentPointIndex()
+    {
+        int lastWaypointIndex = waypoint.Points.Length - 1;
+        if (_currentWaypointIndex < lastWaypointIndex)
+        {
+            _currentWaypointIndex++;
+        }
+        else
+        {
+            ReturnEnemyToPool();
+        }
+        /**else
+        {
+            EndPointReached();
+        }**/
+    }
+
+    private void ReturnEnemyToPool()
+    {
+         Debug.Log("¡Enemy llegó al final!");
+        OnEndReached?.Invoke();
+        ObjectPooler.ReturnToPool(gameObject);
+    }
+
+    private void UpdateAnimationDirection()
+    {
+        Vector3 direction = transform.position - _lastPosition;
+
+        // Solo actualiza si se está moviendo (evita parpadeo por ruido numérico)
+        if (direction.magnitude < 0.001f)
+        {
+            _animator.SetFloat("MoveX", 0f);
+            _animator.SetFloat("MoveY", 0f);
+            return;
+        }
+
+        // Normalizamos para que no se acumulen valores altos
+        Vector3 normalizedDirection = direction.normalized;
+
+        Debug.Log($"MoveX: {normalizedDirection.x}, MoveY: {normalizedDirection.y}");
+
+
+        _animator.SetFloat("MoveX", normalizedDirection.x);
+        _animator.SetFloat("MoveY", normalizedDirection.y);
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+ObjectPooler
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ObjectPooler : MonoBehaviour
+{
+    [SerializeField] private GameObject prefab;
+    [SerializeField] private int poolSize = 10;
+
+    private List<GameObject> _pool;
+    private GameObject _poolContainer;
+
+    private void Awake()
+    {
+        _pool = new List<GameObject>();
+        _poolContainer = new GameObject($"Pool - {prefab.name}");
+        
+        CreatePooler();
+    }
+
+    private void CreatePooler()
+    {
+        for (int i = 0; i < poolSize; i++)
+        {
+            _pool.Add(CreateInstance());
+        }
+    }
+    
+    private GameObject CreateInstance()
+    {
+        GameObject newInstance = Instantiate(prefab);
+        newInstance.transform.SetParent(_poolContainer.transform);
+        newInstance.SetActive(false);
+        return newInstance;
+    }
+
+    public GameObject GetInstanceFromPool()
+    {
+        for (int i = 0; i < _pool.Count; i++)
+        {
+            if (!_pool[i].activeInHierarchy)
+            {
+                return _pool[i];
+            }
+        }
+        
+        return CreateInstance();
+    }
+
+    public static void ReturnToPool(GameObject instance){
+
+        instance.SetActive(false);
+
+    }
+
+}
+
+
+
+
+
+
+
+LevelManager
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class LevelManager : MonoBehaviour
+{
+    [SerializeField] private int lives = 10;
+
+    public int TotalLives
+    {
+        get => lives;
+        private set => lives = value;
+    }
+
+    private void Start()
+    {
+        TotalLives = lives;
+    }
+
+
+    private void ReduceLives()
+    {
+        TotalLives--; // Esto ahora realmente modifica el campo 'lives'
+        Debug.Log($"Vidas restantes: {TotalLives}");
+
+        if (TotalLives <= 0)
+        {
+            TotalLives = 0;
+            Debug.Log("¡Game Over!");
+        }
+    }
+
+    private void OnEnable()
+    {
+        Enemy.OnEndReached += ReduceLives;
+    }
+
+    private void OnDisable()
+    {
+        Enemy.OnEndReached -= ReduceLives;
+    }
+}
+
+
+
+
+
+
+
+
+Spawner
+
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
+public enum SpawnModes
+{
+    Fixed,
+    Random
+}
+
+public class Spawner : MonoBehaviour
+{
+    [Header("Settings")]
+    [SerializeField] private SpawnModes spawnMode = SpawnModes.Fixed;
+    [SerializeField] private int enemyCount = 10;
+    [SerializeField] private GameObject testGO;
+    
+    [Header("Fixed Delay")]
+    [SerializeField] private float delayBtwSpawns;
+    
+    [Header("Random Delay")]
+    [SerializeField] private float minRandomDelay;
+    [SerializeField] private float maxRandomDelay;
+
+    private float _spawnTimer;
+    private int _enemiesSpawned;
+
+    private ObjectPooler _pooler;
+
+    private void Start()
+    {
+        _pooler = GetComponent<ObjectPooler>();
+    }
+
+    private void Update()
+    {
+        _spawnTimer -= Time.deltaTime;
+        if (_spawnTimer < 0)
+        {
+            _spawnTimer = GetSpawnDelay();
+            if (_enemiesSpawned < enemyCount)
+            {
+                _enemiesSpawned++;
+                SpawnEnemy();
+            }
+        }
+    }
+
+    private void SpawnEnemy()
+    {
+        GameObject newInstance = _pooler.GetInstanceFromPool();
+        newInstance.SetActive(true);
+    }
+
+    private float GetSpawnDelay()
+    {
+        float delay = 0f;
+        if (spawnMode == SpawnModes.Fixed)
+        {
+            delay = delayBtwSpawns;
+        }
+        else
+        {
+            delay = GetRandomDelay();
+        }
+
+        return delay;
+    }
+    
+    private float GetRandomDelay()
+    {
+        float randomTimer = Random.Range(minRandomDelay, maxRandomDelay);
+        return randomTimer;
+    }
+}
+
+
+
+
+Waypoint
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Waypoint : MonoBehaviour
+{
+    [SerializeField] private Vector3[] points;
+
+    public Vector3[] Points => points;
+    public Vector3 CurrentPosition => _currentPosition;
+
+    private Vector3 _currentPosition;
+    private bool _gameStarted;
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        _gameStarted = true;
+        _currentPosition = transform.position;
+    }
+
+    public Vector3 GetWaypointPosition(int index)
+    {
+        return CurrentPosition + Points[index];
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!_gameStarted && transform.hasChanged)
+        {
+            _currentPosition = transform.position;
+        }
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(points[i] + _currentPosition, 0.5f);
+
+            if (i < points.Length - 1)
+            {
+                Gizmos.color = Color.gray;
+                Gizmos.DrawLine(points[i] + _currentPosition, points[i + 1] + _currentPosition);
+            }
+        }
+    }
+}
+
+
+
+EditorWaypoint
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+
+[CustomEditor(typeof(Waypoint))]
+public class WaypointEditor : Editor
+{
+    Waypoint Waypoint => target as Waypoint;
+    private void OnSceneGUI()
+    {
+        Handles.color = Color.red;
+        for (int i = 0; i < Waypoint.Points.Length; i++)
+        {
+            EditorGUI.BeginChangeCheck();
+            
+            // Create Handles
+            Vector3 currentWaypointPoint = Waypoint.CurrentPosition + Waypoint.Points[i];
+            var fmh_20_17_638820620706771289 = Quaternion.identity; Vector3 newWaypointPoint = Handles.FreeMoveHandle(currentWaypointPoint, 0.7f, 
+                new Vector3(0.3f, 0.3f, 0.3f), Handles.SphereHandleCap);
+            
+            // Create text
+            GUIStyle textStyle = new GUIStyle();
+            textStyle.fontStyle = FontStyle.Bold;
+            textStyle.fontSize = 16;
+            textStyle.normal.textColor = Color.yellow;
+            Vector3 textAlligment = Vector3.down * 0.35f + Vector3.right * 0.35f;
+            Handles.Label(Waypoint.CurrentPosition + Waypoint.Points[i] + textAlligment, 
+                $"{i + 1}", textStyle);
+            EditorGUI.EndChangeCheck();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(target, "Free Move Handle");
+                Waypoint.Points[i] = newWaypointPoint - Waypoint.CurrentPosition;
+            }
+        }
+    }
+}
