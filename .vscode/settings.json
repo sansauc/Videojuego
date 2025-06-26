@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Copia Tower Defense 4.sln"
+    "dotnet.defaultSolution": "Videojuego.sln"
 }
