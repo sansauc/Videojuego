@@ -51,6 +51,9 @@ TagManager:
   - name: Arboles
     uniqueID: 3820688735
     locked: 0
+  - name: Node
+    uniqueID: 3095277617
+    locked: 0
   - name: Enemy
     uniqueID: 3183638911
     locked: 0
