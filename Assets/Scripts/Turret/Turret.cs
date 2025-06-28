@@ -9,6 +9,11 @@ public class Turret : MonoBehaviour
 
     public Enemy CurrentEnemyTarget { get; set; }
 
+    public TurretUpgrade TurretUpgrade { get; set; }
+
+    public float AttackRange => attackRange;
+
+
 
     private bool _gameStarted;
 
@@ -18,6 +23,10 @@ public class Turret : MonoBehaviour
     {
         _gameStarted = true;
         _enemies = new List<Enemy>();
+
+        TurretUpgrade = GetComponent<TurretUpgrade>();
+        GetComponent<CircleCollider2D>().radius = attackRange;
+
     }
 
 

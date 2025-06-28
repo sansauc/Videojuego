@@ -279,6 +279,8 @@ MonoBehaviour:
   upgradeCostIncremental: 0
   damageIncremental: 0
   delayReduce: 0
+  maxUpgradeLevel: 3
+  sellPert: 0.5
 --- !u!1 &6106586359981455709
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,7 +352,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -446216597
-  m_SortingLayer: 1
+  m_SortingLayer: 6
   m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: ccfc42747ca3e3a42894f9b05f89ee12, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
