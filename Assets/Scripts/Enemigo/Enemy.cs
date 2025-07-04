@@ -145,7 +145,7 @@ public class Enemy : MonoBehaviour
         // Normalizamos para que no se acumulen valores altos
         Vector3 normalizedDirection = direction.normalized;
 
-        Debug.Log($"MoveX: {normalizedDirection.x}, MoveY: {normalizedDirection.y}");
+        //Debug.Log($"MoveX: {normalizedDirection.x}, MoveY: {normalizedDirection.y}");
 
 
         _animator.SetFloat("MoveX", normalizedDirection.x);
