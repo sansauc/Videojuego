@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 272103dd647b73a40be194096d1ccbea
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - achievementCardPrefab: {fileID: 6706006128622732389, guid: 5ec0ebe6a3657074a9beb4a7c8aa321d, type: 3}
+  - achievementPanelContainer: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

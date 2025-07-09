@@ -95,6 +95,9 @@ public class EnemyHealth : MonoBehaviour
         CurrentHealth = initialHealth;
         _healthBar.fillAmount = 1f;
 
+        AchievementManager.Instance.AddProgress("Kill20Ogro", 1);
+        AchievementManager.Instance.AddProgress("Kill50Ogro", 1);
+        AchievementManager.Instance.AddProgress("Kill100Ogro", 1);
         //Esto es nuevo, antes estaba comentado esto: OnEnemyKilled?.Invoke(_enemy);
         //Enemy.OnEnemyKilled?.Invoke();
         OnEnemyKilled?.Invoke(_enemy);

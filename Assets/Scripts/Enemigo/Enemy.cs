@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
 
     public static Action OnEndReached;
 
-
+    [SerializeField] private int idEnemy;
     [SerializeField] private float moveSpeed = 3f;
 
     /// <summary>
