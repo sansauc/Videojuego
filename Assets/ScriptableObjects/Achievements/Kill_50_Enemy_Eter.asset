@@ -17,3 +17,4 @@ MonoBehaviour:
   ProgressToUnlock: 50
   GoldReward: 100
   Sprite: {fileID: -2011033655, guid: 5d88e106563087746a6217d5115c60d7, type: 3}
+  EnemyID: 2

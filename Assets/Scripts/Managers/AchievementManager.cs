@@ -51,4 +51,16 @@ public class AchievementManager : Singleton<AchievementManager>
         return null;
     }
 
+
+    public void AddProgressByEnemyID(int enemyID)
+    {
+        foreach (var achievement in achievements)
+        {
+            if (achievement.EnemyID == enemyID && !achievement.IsUnlocked)
+            {
+                achievement.AddProgress(1);
+            }
+        }
+    } //Función que se llame cuando un enemigo muere y que recorra todos los logros activos. Permite agregar progreso por ID de enemigo muerto
+
 }

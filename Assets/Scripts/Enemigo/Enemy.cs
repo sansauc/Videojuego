@@ -11,6 +11,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int idEnemy;
     [SerializeField] private float moveSpeed = 3f;
 
+    public int IdEnemy => idEnemy; // propiedad solo de lectura (getter)
+
     /// <summary>
     /// The waypoint reference
     /// </summary>
@@ -170,6 +172,11 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(stunDuration);
 
         isStunned = false;
+    }
+
+    public void ResetEnemy()
+    {
+        _currentWaypointIndex = 0;
     }
 
 }

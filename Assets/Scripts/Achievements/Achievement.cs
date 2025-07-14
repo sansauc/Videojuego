@@ -13,6 +13,8 @@ public class Achievement : ScriptableObject
     public int GoldReward;
     public Sprite Sprite;
 
+    public int EnemyID; //Se agrega para saber si el id del enemigo muerto coincide con el ID del logro
+
     public bool IsUnlocked { get; set; }
 
     private int CurrentProgress;

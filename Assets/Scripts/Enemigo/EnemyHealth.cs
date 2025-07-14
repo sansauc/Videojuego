@@ -17,7 +17,7 @@ public class EnemyHealth : MonoBehaviour
     public float CurrentHealth { get; set; }
 
     public static event System.Action<Enemy> OnEnemyKilled;
-    
+
     private Image _healthBar;
 
     //Modifica tu EnemyHealth.cs para guardar una referencia al Enemy, y llamarlo en DealDamage:
@@ -95,9 +95,12 @@ public class EnemyHealth : MonoBehaviour
         CurrentHealth = initialHealth;
         _healthBar.fillAmount = 1f;
 
-        AchievementManager.Instance.AddProgress("Kill20Ogro", 1);
+        // NUEVO: se suma progreso a los logros con este enemyID
+        AchievementManager.Instance.AddProgressByEnemyID(_enemy.IdEnemy); // usa el ID
+
+        /*AchievementManager.Instance.AddProgress("Kill20Ogro", 1);
         AchievementManager.Instance.AddProgress("Kill50Ogro", 1);
-        AchievementManager.Instance.AddProgress("Kill100Ogro", 1);
+        AchievementManager.Instance.AddProgress("Kill100Ogro", 1);**/
         //Esto es nuevo, antes estaba comentado esto: OnEnemyKilled?.Invoke(_enemy);
         //Enemy.OnEnemyKilled?.Invoke();
         OnEnemyKilled?.Invoke(_enemy);
