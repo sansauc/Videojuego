@@ -10,14 +10,26 @@ public enum SpawnModes
     Random
 }
 
+[System.Serializable]
+public class WaveData
+{
+    public GameObject enemyPrefab;
+    public int enemyCount;
+}
+
 public class Spawner : MonoBehaviour
 {
+    public static Action OnWaveCompleted;
+
+    [SerializeField] private List<WaveData> waves;
+    private WaveData currentWave => waves[currentWaveIndex];
+
+    private int currentWaveIndex = 0; // ✅ Declaración añadida
+
     [Header("Settings")]
     [SerializeField] private SpawnModes spawnMode = SpawnModes.Fixed;
     [SerializeField] private int enemyCount = 10;
-    [SerializeField] private float delayBtwWaves = 1f; //Se implementa con el sistema de oleadas
-
-
+    [SerializeField] private float delayBtwWaves = 1f;
 
     [Header("Fixed Delay")]
     [SerializeField] private float delayBtwSpawns;
@@ -26,37 +38,32 @@ public class Spawner : MonoBehaviour
     [SerializeField] private float minRandomDelay;
     [SerializeField] private float maxRandomDelay;
 
+    [Header("Poolers")]
+    [SerializeField] private ObjectPooler enemyWave1Pooler;
+    [SerializeField] private ObjectPooler enemyWave2Pooler;
+    [SerializeField] private ObjectPooler enemyWave3Pooler;
+
     private float _spawnTimer;
     private int _enemiesSpawned;
-    private int _enemiesRamaining; //Se utiliza para el sistema de oleadas
-    private ObjectPooler _pooler;
+    private int _enemiesRamaining;
+
+    private ObjectPooler _pooler; // ✅ Declaración añadida
 
     private Waypoint _waypoint;
 
-    private bool _isWaveActive = true; //para controlar si se activa la oleada
+    private bool _isWaveActive = true;
+
+    public int CurrentWave { get; set; }
+
+    public int TotalWaves => waves.Count;
+
 
     private void Start()
     {
-        _pooler = GetComponent<ObjectPooler>();
         _waypoint = GetComponent<Waypoint>();
-
-        _enemiesRamaining = enemyCount;
-
+        _enemiesRamaining = currentWave.enemyCount;
+        _pooler = GetPooler(); // Inicializar pooler al comienzo
     }
-
-    /**private void Update()
-    {
-        _spawnTimer -= Time.deltaTime;
-        if (_spawnTimer < 0)
-        {
-            _spawnTimer = GetSpawnDelay();
-            if (_enemiesSpawned < enemyCount)
-            {
-                _enemiesSpawned++;
-                SpawnEnemy();
-            }
-        }
-    }**/ //Antiguo metodo sin oleadas
 
     private void Update()
     {
@@ -66,16 +73,15 @@ public class Spawner : MonoBehaviour
         if (_spawnTimer < 0)
         {
             _spawnTimer = GetSpawnDelay();
-            if (_enemiesSpawned < enemyCount)
+            if (_enemiesSpawned < _enemiesRamaining)
             {
                 _enemiesSpawned++;
                 SpawnEnemy();
             }
             else
             {
-                // Oleada completa, deja de spawnear
                 _isWaveActive = false;
-                Debug.Log("La oleada se desactivo, bandera: " + _isWaveActive);
+                Debug.Log("La oleada se desactivó, bandera: " + _isWaveActive);
             }
         }
     }
@@ -86,9 +92,7 @@ public class Spawner : MonoBehaviour
 
         Enemy enemy = newInstance.GetComponent<Enemy>();
         enemy.Waypoint = _waypoint;
-
         enemy.ResetEnemy();
-
         enemy.transform.localPosition = _waypoint.GetWaypointPosition(0);
 
         newInstance.SetActive(true);
@@ -96,32 +100,50 @@ public class Spawner : MonoBehaviour
 
     private float GetSpawnDelay()
     {
-        float delay = 0f;
-        if (spawnMode == SpawnModes.Fixed)
-        {
-            delay = delayBtwSpawns;
-        }
-        else
-        {
-            delay = GetRandomDelay();
-        }
-
-        return delay;
+        return spawnMode == SpawnModes.Fixed ? delayBtwSpawns : GetRandomDelay();
     }
 
     private float GetRandomDelay()
     {
-        float randomTimer = Random.Range(minRandomDelay, maxRandomDelay);
-        return randomTimer;
+        return Random.Range(minRandomDelay, maxRandomDelay);
+    }
+
+    private ObjectPooler GetPooler()
+    {
+        int currentWave = LevelManager.Instance.CurrentWave;
+
+        if (currentWave <= 1)
+            return enemyWave1Pooler;
+        else if (currentWave == 2)
+            return enemyWave2Pooler;
+        else if (currentWave >= 3)
+            return enemyWave3Pooler;
+
+        return null;
     }
 
     private IEnumerator NextWave()
     {
         yield return new WaitForSeconds(delayBtwWaves);
-        _enemiesRamaining = enemyCount;
-        _spawnTimer = 0f;
+
+        if (currentWaveIndex + 1 >= waves.Count)
+        {
+            Debug.Log("¡Todas las oleadas han terminado!");
+            yield break;
+        }
+
+        currentWaveIndex++;
+
+        _pooler = GetPooler(); // ✅ Actualizamos el pooler con la nueva oleada
+        if (_pooler != null)
+        {
+            _pooler.SetPrefab(currentWave.enemyPrefab); // Cambiamos el prefab del pool si es necesario
+        }
+
+        _enemiesRamaining = currentWave.enemyCount;
         _enemiesSpawned = 0;
-        _isWaveActive = true; //reiniciamos la bandera
+        _spawnTimer = 0f;
+        _isWaveActive = true;
     }
 
     private void RecordEnemyEndReached()
@@ -138,8 +160,10 @@ public class Spawner : MonoBehaviour
     {
         _enemiesRamaining--;
         Debug.Log("Enemy eliminado. Restantes: " + _enemiesRamaining);
+
         if (_enemiesRamaining <= 0)
         {
+            OnWaveCompleted?.Invoke();
             StartCoroutine(NextWave());
         }
     }
@@ -156,4 +180,3 @@ public class Spawner : MonoBehaviour
         EnemyHealth.OnEnemyKilled -= RecordEnemyKilled;
     }
 }
-

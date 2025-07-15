@@ -15,7 +15,7 @@ public class ObjectPooler : MonoBehaviour
     {
         _pool = new List<GameObject>();
         _poolContainer = new GameObject($"Pool - {prefab.name}");
-        
+
         CreatePooler();
     }
 
@@ -26,7 +26,7 @@ public class ObjectPooler : MonoBehaviour
             _pool.Add(CreateInstance());
         }
     }
-    
+
     private GameObject CreateInstance()
     {
         GameObject newInstance = Instantiate(prefab);
@@ -44,11 +44,12 @@ public class ObjectPooler : MonoBehaviour
                 return _pool[i];
             }
         }
-        
+
         return CreateInstance();
     }
 
-    public static void ReturnToPool(GameObject instance){
+    public static void ReturnToPool(GameObject instance)
+    {
 
         instance.SetActive(false);
 
@@ -57,6 +58,21 @@ public class ObjectPooler : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         instance.SetActive(false);
+    }
+
+
+    public void SetPrefab(GameObject newPrefab)
+    {
+        prefab = newPrefab;
+
+        // Opcional: limpiar pool viejo
+        foreach (var obj in _pool)
+        {
+            Destroy(obj);
+        }
+
+        _pool.Clear();
+        CreatePooler();
     }
 }
 

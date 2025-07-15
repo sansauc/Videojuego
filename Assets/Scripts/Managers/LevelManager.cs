@@ -7,23 +7,36 @@ public class LevelManager : Singleton<LevelManager>
 {
     [SerializeField] private int lives = 10;
 
-    //private int enemiesKilled; Esta variable la uso si quiero llevar un contador de kills
-
     public int TotalLives
     {
         get => lives;
         private set => lives = value;
     }
 
+    public int CurrentWave { get; private set; }
+
+    private int maxWaves; // ✅ Para controlar el número total de oleadas
+
     private void Start()
     {
         TotalLives = lives;
-    }
+        CurrentWave = 1;
 
+        // ✅ Obtener cantidad de oleadas desde el Spawner
+        var spawner = FindObjectOfType<Spawner>();
+        if (spawner != null)
+        {
+            maxWaves = spawner.TotalWaves; // accede a propiedad pública que expondremos en Spawner
+        }
+        else
+        {
+            Debug.LogError("Spawner no encontrado en la escena.");
+        }
+    }
 
     private void ReduceLives()
     {
-        TotalLives--; // Esto ahora realmente modifica el campo 'lives'
+        TotalLives--;
         Debug.Log($"Vidas restantes: {TotalLives}");
 
         if (TotalLives <= 0)
@@ -33,31 +46,33 @@ public class LevelManager : Singleton<LevelManager>
         }
     }
 
+    private void WaveCompleted()
+    {
+        if (CurrentWave < maxWaves)
+        {
+            CurrentWave++;
+            Debug.Log($"Oleada completada. Próxima oleada: {CurrentWave}");
+        }
+        else
+        {
+            Debug.Log("✅ Todas las oleadas han sido completadas. ¡Nivel superado!");
+            // Aquí podrías activar pantalla de victoria, pasar de nivel, etc.
+        }
+    }
+
     private void OnEnable()
     {
         Enemy.OnEndReached += ReduceLives;
-        //Esto es nuevo:
-        Enemy.OnEnemyKilled += ReduceLives; // También reducimos una vida si es eliminado
-    
-        /** Si en vez de reducir vidas quiero un contador de kill, lo invocamos asi:
-        Enemy.OnEnemyKilled += CountKill; en OnEnable y 
-        Enemy.OnEnemyKilled -= CountKill; en OnDisable
-        **/
+        Enemy.OnEnemyKilled += ReduceLives;
 
+        Spawner.OnWaveCompleted += WaveCompleted;
     }
 
     private void OnDisable()
     {
         Enemy.OnEndReached -= ReduceLives;
-        Enemy.OnEnemyKilled += ReduceLives;
-    }
+        Enemy.OnEnemyKilled -= ReduceLives;
 
-    /**Metodo para contar kills
-    private void CountKill()
-    {
-    enemiesKilled++;
-    Debug.Log($"Enemigos eliminados: {enemiesKilled}");
+        Spawner.OnWaveCompleted -= WaveCompleted;
     }
-    **/
-
 }
