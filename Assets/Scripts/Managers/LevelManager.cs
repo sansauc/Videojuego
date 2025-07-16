@@ -13,7 +13,7 @@ public class LevelManager : Singleton<LevelManager>
         private set => lives = value;
     }
 
-    public int CurrentWave { get; private set; }
+    public int CurrentWave { get; set; }
 
     private int maxWaves; // ✅ Para controlar el número total de oleadas
 

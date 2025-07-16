@@ -28,7 +28,6 @@ public class Spawner : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private SpawnModes spawnMode = SpawnModes.Fixed;
-    [SerializeField] private int enemyCount = 10;
     [SerializeField] private float delayBtwWaves = 1f;
 
     [Header("Fixed Delay")]
@@ -57,15 +56,18 @@ public class Spawner : MonoBehaviour
 
     public int TotalWaves => waves.Count;
 
+    private int _enemiesToSpawn;  // Cuántos quedan por spawnear
+    private int _enemiesAlive;    // Cuántos están activos
 
     private void Start()
     {
         _waypoint = GetComponent<Waypoint>();
         _enemiesRamaining = currentWave.enemyCount;
         _pooler = GetPooler(); // Inicializar pooler al comienzo
+        PrepareWave();
     }
 
-    private void Update()
+    /**private void Update()
     {
         if (!_isWaveActive) return;
 
@@ -84,7 +86,34 @@ public class Spawner : MonoBehaviour
                 Debug.Log("La oleada se desactivó, bandera: " + _isWaveActive);
             }
         }
+    }**///Nuevo Metodo Update a continuacion, separando enemigos por spawnear y cuantos quedan vivos
+
+    private void Update()
+    {
+        if (!_isWaveActive) return;
+
+        _spawnTimer -= Time.deltaTime;
+        if (_spawnTimer <= 0f)
+        {
+            _spawnTimer = GetSpawnDelay();
+
+            if (_enemiesToSpawn > 0)
+            {
+                SpawnEnemy();
+                _enemiesToSpawn--;
+                _enemiesAlive++;
+            }
+        }
+
+        // Si ya no hay enemigos por spawnear ni vivos, termina la oleada
+        if (_enemiesToSpawn == 0 && _enemiesAlive == 0 && _isWaveActive)
+        {
+            _isWaveActive = false;
+            OnWaveCompleted?.Invoke();
+            StartCoroutine(NextWave());
+        }
     }
+
 
     private void SpawnEnemy()
     {
@@ -122,7 +151,7 @@ public class Spawner : MonoBehaviour
         return null;
     }
 
-    private IEnumerator NextWave()
+    /**private IEnumerator NextWave()
     {
         yield return new WaitForSeconds(delayBtwWaves);
 
@@ -144,9 +173,32 @@ public class Spawner : MonoBehaviour
         _enemiesSpawned = 0;
         _spawnTimer = 0f;
         _isWaveActive = true;
+    }**///Nuevo metodo next wave, separando enemigos por spawnear y enemigos vivos
+
+    private IEnumerator NextWave()
+    {
+        yield return new WaitForSeconds(delayBtwWaves);
+
+        if (currentWaveIndex + 1 >= waves.Count)
+        {
+            Debug.Log("✅ Todas las oleadas han terminado.");
+            yield break;
+        }
+
+        currentWaveIndex++;
+
+
+        _pooler = GetPooler(); //✅ Actualizamos el pooler con la nueva oleada
+
+        if (_pooler != null)
+        {
+            _pooler.SetPrefab(currentWave.enemyPrefab); // Cambiamos el prefab del pool si es necesario
+        }
+
+        PrepareWave();
     }
 
-    private void RecordEnemyEndReached()
+ /**   private void RecordEnemyEndReached()
     {
         ReduceRemainingEnemies();
     }
@@ -154,9 +206,9 @@ public class Spawner : MonoBehaviour
     private void RecordEnemyKilled(Enemy enemy)
     {
         ReduceRemainingEnemies();
-    }
+    }**
 
-    private void ReduceRemainingEnemies()
+    /**private void ReduceRemainingEnemies()
     {
         _enemiesRamaining--;
         Debug.Log("Enemy eliminado. Restantes: " + _enemiesRamaining);
@@ -166,17 +218,48 @@ public class Spawner : MonoBehaviour
             OnWaveCompleted?.Invoke();
             StartCoroutine(NextWave());
         }
-    }
+    }**///Nueva versión para evitar que spawneen 2 oleadas al mismo tiempo
 
-    private void OnEnable()
+
+
+    private void PrepareWave()
     {
-        Enemy.OnEndReached += RecordEnemyEndReached;
-        EnemyHealth.OnEnemyKilled += RecordEnemyKilled;
+        _enemiesToSpawn = currentWave.enemyCount;
+        _enemiesAlive = 0;
+        _spawnTimer = 0f;
+        _isWaveActive = true;
+    }
+ private void OnEnable()
+    {
+        Enemy.OnEndReached += HandleEnemyExit;
+        EnemyHealth.OnEnemyKilled += HandleEnemyKilled;
     }
 
     private void OnDisable()
     {
-        Enemy.OnEndReached -= RecordEnemyEndReached;
-        EnemyHealth.OnEnemyKilled -= RecordEnemyKilled;
+        Enemy.OnEndReached -= HandleEnemyExit;
+        EnemyHealth.OnEnemyKilled -= HandleEnemyKilled;
+    }
+
+    private void HandleEnemyKilled(Enemy enemy)
+    {
+        _enemiesAlive--;
+        CheckWaveEnd();
+    }
+
+    private void HandleEnemyExit()
+    {
+        _enemiesAlive--;
+        CheckWaveEnd();
+    }
+
+    private void CheckWaveEnd()
+    {
+        if (_enemiesToSpawn == 0 && _enemiesAlive <= 0 && _isWaveActive)
+        {
+            _isWaveActive = false;
+            OnWaveCompleted?.Invoke();
+            StartCoroutine(NextWave());
+        }
     }
 }

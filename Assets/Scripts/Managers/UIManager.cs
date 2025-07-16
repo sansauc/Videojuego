@@ -10,6 +10,8 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject turretShopPanel;
     [SerializeField] private GameObject nodeUIPanel;
     [SerializeField] private GameObject achievementPanel;
+    [SerializeField] private GameObject trapShopPanel;
+    [SerializeField] private GameObject nodeTrapUIPanel;
 
 
 
@@ -20,9 +22,16 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private TextMeshProUGUI totalCoinsText;
     [SerializeField] private TextMeshProUGUI lifesText;
 
+    //Desde aca lo de Trampas
+    [SerializeField] private TextMeshProUGUI trapUpgradeText;
+    [SerializeField] private TextMeshProUGUI trapSellText;
+    [SerializeField] private TextMeshProUGUI trapLevelText;
+
 
 
     private Node _currentNodeSelected;
+    private NodeTrap _currentTrapNodeSelected; //Para las trampas
+
 
     private void Update()
     {
@@ -46,6 +55,22 @@ public class UIManager : Singleton<UIManager>
         _currentNodeSelected.CloseAttackRangeSprite();
         nodeUIPanel.SetActive(false);
     }
+
+    // NUEVO MÉTODO: Cerrar nodeTrapUIPanel
+    public void CloseNodeTrapUIPanel()
+    {
+        _currentTrapNodeSelected?.CloseTrapRangeSprite();
+        nodeTrapUIPanel.SetActive(false);
+    }
+
+    //Esto es de las trampas
+    public void CloseTrapShopPanel()
+    {
+        _currentTrapNodeSelected?.CloseTrapRangeSprite();
+        trapShopPanel.SetActive(false);
+    }
+
+    // ==================== TURRET ====================
 
     public void UpgradeTurret()
     {
@@ -87,6 +112,63 @@ public class UIManager : Singleton<UIManager>
         sellText.text = sellAmount.ToString();
     }
 
+    // ==================== TRAP ====================
+
+    public void UpgradeTrap()
+    {
+        var upgrade = _currentTrapNodeSelected.Trap.GetComponent<TrapUpgrade>();
+        if (upgrade != null)
+        {
+            upgrade.UpgradeTrap();
+            UpdateTrapUpgradeText(upgrade);
+            UpdateTrapLevel(upgrade);
+            UpdateTrapSellValue(upgrade);
+        }
+    }
+
+    public void SellTrap()
+    {
+        _currentTrapNodeSelected.SellTrap();
+        _currentTrapNodeSelected = null;
+        //trapShopPanel.SetActive(false);
+        nodeTrapUIPanel.SetActive(false); // Cerramos el panel de mejora
+    }
+
+    private void ShowTrapUI()
+    {
+        nodeTrapUIPanel.SetActive(true); // <-- usamos el panel de mejora, no el de compra
+        trapShopPanel.SetActive(false);  // por si estaba abierto
+
+        var upgrade = _currentTrapNodeSelected.Trap.GetComponent<TrapUpgrade>();
+        if (upgrade != null)
+        {
+            UpdateTrapUpgradeText(upgrade);
+            UpdateTrapLevel(upgrade);
+            UpdateTrapSellValue(upgrade);
+        }
+    }
+
+    private void UpdateTrapUpgradeText(TrapUpgrade upgrade)
+    {
+        trapUpgradeText.text = upgrade.GetUpgradeCost().ToString();
+    }
+
+    private void UpdateTrapLevel(TrapUpgrade upgrade)
+    {
+        trapLevelText.text = $"Level {upgrade.GetCurrentLevel()}";
+    }
+
+    private void UpdateTrapSellValue(TrapUpgrade upgrade)
+    {
+        trapSellText.text = upgrade.GetSellValue().ToString();
+    }
+
+
+    // ==================== NODE SELECT EVENTS ====================
+
+
+
+
     private void NodeSelected(Node nodeSelected)
     {
         _currentNodeSelected = nodeSelected;
@@ -101,13 +183,34 @@ public class UIManager : Singleton<UIManager>
     }
 
 
+    private void NodeTrapSelected(NodeTrap trapNode)
+    {
+        _currentTrapNodeSelected = trapNode;
+
+        if (_currentTrapNodeSelected.IsEmpty())
+        {
+            trapShopPanel.SetActive(true); // AÑADIR ESTA LÍNEA
+            nodeTrapUIPanel.SetActive(false); // aseguramos que el panel de mejora esté oculto
+
+        }
+        else
+        {
+            trapShopPanel.SetActive(false); // aseguramos que el panel de compra esté oculto
+            ShowTrapUI();
+        }
+    }
+
     private void OnEnable()
     {
         Node.OnNodeSelected += NodeSelected;
+        NodeTrap.OnNodeTrapSelected += NodeTrapSelected;
+
     }
 
     private void OnDisable()
     {
         Node.OnNodeSelected -= NodeSelected;
+        NodeTrap.OnNodeTrapSelected -= NodeTrapSelected;
+
     }
 }
