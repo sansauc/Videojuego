@@ -16,11 +16,9 @@ public class EnemyHealth : MonoBehaviour
 
     public float CurrentHealth { get; set; }
 
-    public static event System.Action<Enemy> OnEnemyKilled;
+    public static event Action<Enemy> OnEnemyKilled;
 
     private Image _healthBar;
-
-    //Modifica tu EnemyHealth.cs para guardar una referencia al Enemy, y llamarlo en DealDamage:
 
     private Enemy _enemy;
 
@@ -36,11 +34,6 @@ public class EnemyHealth : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            DealDamage(5f);
-        }
-
         _healthBar.fillAmount = Mathf.Lerp(_healthBar.fillAmount,
             CurrentHealth / maxHealth, Time.deltaTime * 10f);
     }
@@ -103,7 +96,7 @@ public class EnemyHealth : MonoBehaviour
         AchievementManager.Instance.AddProgress("Kill100Ogro", 1);**/
         //Esto es nuevo, antes estaba comentado esto: OnEnemyKilled?.Invoke(_enemy);
         //Enemy.OnEnemyKilled?.Invoke();
-        OnEnemyKilled?.Invoke(_enemy);
+        OnEnemyKilled?.Invoke(_enemy); // IMPORTANTE: este evento es el que decrementa enemigos en Spawner
 
         ObjectPooler.ReturnToPool(gameObject);
     }

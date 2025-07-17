@@ -141,11 +141,11 @@ public class Spawner : MonoBehaviour
     {
         int currentWave = LevelManager.Instance.CurrentWave;
 
-        if (currentWave <= 1)
+        if (currentWave <= 0)
             return enemyWave1Pooler;
-        else if (currentWave == 2)
+        else if (currentWave == 1)
             return enemyWave2Pooler;
-        else if (currentWave >= 3)
+        else if (currentWave >= 2)
             return enemyWave3Pooler;
 
         return null;
@@ -198,27 +198,27 @@ public class Spawner : MonoBehaviour
         PrepareWave();
     }
 
- /**   private void RecordEnemyEndReached()
-    {
-        ReduceRemainingEnemies();
-    }
+    /**   private void RecordEnemyEndReached()
+       {
+           ReduceRemainingEnemies();
+       }
 
-    private void RecordEnemyKilled(Enemy enemy)
-    {
-        ReduceRemainingEnemies();
-    }**
+       private void RecordEnemyKilled(Enemy enemy)
+       {
+           ReduceRemainingEnemies();
+       }**
 
-    /**private void ReduceRemainingEnemies()
-    {
-        _enemiesRamaining--;
-        Debug.Log("Enemy eliminado. Restantes: " + _enemiesRamaining);
+       /**private void ReduceRemainingEnemies()
+       {
+           _enemiesRamaining--;
+           Debug.Log("Enemy eliminado. Restantes: " + _enemiesRamaining);
 
-        if (_enemiesRamaining <= 0)
-        {
-            OnWaveCompleted?.Invoke();
-            StartCoroutine(NextWave());
-        }
-    }**///Nueva versión para evitar que spawneen 2 oleadas al mismo tiempo
+           if (_enemiesRamaining <= 0)
+           {
+               OnWaveCompleted?.Invoke();
+               StartCoroutine(NextWave());
+           }
+       }**///Nueva versión para evitar que spawneen 2 oleadas al mismo tiempo
 
 
 
@@ -229,7 +229,7 @@ public class Spawner : MonoBehaviour
         _spawnTimer = 0f;
         _isWaveActive = true;
     }
- private void OnEnable()
+    private void OnEnable()
     {
         Enemy.OnEndReached += HandleEnemyExit;
         EnemyHealth.OnEnemyKilled += HandleEnemyKilled;
@@ -244,12 +244,16 @@ public class Spawner : MonoBehaviour
     private void HandleEnemyKilled(Enemy enemy)
     {
         _enemiesAlive--;
+        Debug.Log($"🚪 Enemy salió. Enemigos vivos: {_enemiesAlive}");
+
         CheckWaveEnd();
     }
 
     private void HandleEnemyExit()
     {
         _enemiesAlive--;
+        Debug.Log($"☠️ Enemy muerto. Enemigos vivos: {_enemiesAlive}");
+
         CheckWaveEnd();
     }
 

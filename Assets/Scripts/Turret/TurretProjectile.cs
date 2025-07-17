@@ -34,7 +34,7 @@ public class TurretProjectile : MonoBehaviour
         LoadProjectile();
     }
 
-    protected virtual void Update()
+    /** Metodo viejo protected virtual void Update()
     {
 
         if (IsTurretEmpty())
@@ -49,6 +49,38 @@ public class TurretProjectile : MonoBehaviour
             {
                 _currentProjectileLoaded.transform.parent = null;
                 _currentProjectileLoaded.SetEnemy(_turret.CurrentEnemyTarget);
+            }
+
+            _nextAttackTime = Time.time + DelayPerShot;
+        }
+    }**///Metodo nuevo 
+
+    protected virtual void Update()
+    {
+        if (IsTurretEmpty())
+        {
+            LoadProjectile();
+        }
+
+        if (Time.time > _nextAttackTime)
+        {
+            if (_turret.CurrentEnemyTarget != null &&
+                _currentProjectileLoaded != null &&
+                _turret.CurrentEnemyTarget.EnemyHealth.CurrentHealth > 0f)
+            {
+                // 🚫 Intenta asignar enemigo. Si falla, descarta el proyectil.
+                _currentProjectileLoaded.transform.parent = null;
+                bool accepted = _currentProjectileLoaded.SetEnemy(_turret.CurrentEnemyTarget);
+
+                if (!accepted)
+                {
+                    ObjectPooler.ReturnToPool(_currentProjectileLoaded.gameObject);
+                    ResetTurretProjectile(); // Evita mantenerlo cargado
+                }
+                if (IsTurretEmpty())
+                {
+                    LoadProjectile();
+                }
             }
 
             _nextAttackTime = Time.time + DelayPerShot;
@@ -68,6 +100,36 @@ public class TurretProjectile : MonoBehaviour
 
         newInstance.SetActive(true);
     }
+
+    /**protected virtual void LoadProjectile()
+    {
+        // 🚫 No cargar si no hay enemigo o si el enemigo será ignorado
+        if (_turret.CurrentEnemyTarget == null)
+            return;
+
+        int enemyId = _turret.CurrentEnemyTarget.IdEnemy;
+
+        // Verificamos el proyectil sin hardcodear el ID, obtenemos uno temporal para ver si lo aceptaría
+        GameObject temp = _pooler.GetInstanceFromPool();
+        Projectile tempProjectile = temp.GetComponent<Projectile>();
+
+        if (Projectile.ShouldIgnore(tempProjectile.IdProjectile, enemyId))
+        {
+            ObjectPooler.ReturnToPool(temp); // devolvemos el proyectil sin usar
+            return;
+        }
+
+        // ✅ Proceder normalmente
+        temp.transform.localPosition = projectileSpawnPosition.position;
+        temp.transform.SetParent(projectileSpawnPosition);
+
+        _currentProjectileLoaded = tempProjectile;
+        _currentProjectileLoaded.TurretOwner = this;
+        _currentProjectileLoaded.ResetProjectile();
+        _currentProjectileLoaded.Damage = Damage;
+
+        temp.SetActive(true);
+    }**/
 
     private bool IsTurretEmpty()
     {

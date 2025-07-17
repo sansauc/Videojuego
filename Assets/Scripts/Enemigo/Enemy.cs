@@ -6,7 +6,9 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    public static Action OnEndReached;
+    //public static Action OnEndReached;
+    public static event Action OnEndReached;
+
 
     [SerializeField] private int idEnemy;
     [SerializeField] private float moveSpeed = 3f;
@@ -35,7 +37,7 @@ public class Enemy : MonoBehaviour
     //Esto es nuevo, se utiliza para detener a un enemigo cuando recibe daño
 
     private bool isStunned = false;
-    private float stunDuration = 0.3f; // Puedes cambiar la duración del "paralizado"
+    private float stunDuration = 0.1f; // Puedes cambiar la duración del "paralizado"
 
     /// <summary>
 
@@ -55,7 +57,6 @@ public class Enemy : MonoBehaviour
 
         //Script de chatgpt para mover al personaje con sus animaciones
         _animator = GetComponent<Animator>();
-        _currentWaypointIndex = 0;
         _lastPosition = transform.position;
     }
 
@@ -117,7 +118,8 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            ReturnEnemyToPool();
+            //ReturnEnemyToPool();
+            ReachEnd();
         }
         /**else
         {
@@ -125,9 +127,16 @@ public class Enemy : MonoBehaviour
         }**/
     }
 
-    private void ReturnEnemyToPool()
+    /**private void ReturnEnemyToPool()
     {
         Debug.Log("¡Enemy llegó al final!");
+        OnEndReached?.Invoke();
+        ObjectPooler.ReturnToPool(gameObject);
+    }**/
+
+    private void ReachEnd()
+    {
+        Debug.Log("⚠️ Enemy llegó al final del camino.");
         OnEndReached?.Invoke();
         ObjectPooler.ReturnToPool(gameObject);
     }

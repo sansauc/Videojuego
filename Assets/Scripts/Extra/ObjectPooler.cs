@@ -61,7 +61,7 @@ public class ObjectPooler : MonoBehaviour
     }
 
 
-    public void SetPrefab(GameObject newPrefab)
+    /**public void SetPrefab(GameObject newPrefab)
     {
         prefab = newPrefab;
 
@@ -73,6 +73,21 @@ public class ObjectPooler : MonoBehaviour
 
         _pool.Clear();
         CreatePooler();
+    }**/ //nuevo setprefav pooler a cont.
+
+    public void SetPrefab(GameObject newPrefab)
+    {
+        prefab = newPrefab;
+
+        // ❌ Ya no destruyas objetos aquí
+        foreach (var obj in _pool)
+        {
+            obj.SetActive(false);
+        }
+
+        _pool.Clear();
+        CreatePooler();
     }
+
 }
 

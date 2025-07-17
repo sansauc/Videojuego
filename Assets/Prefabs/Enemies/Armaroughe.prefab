@@ -141,8 +141,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthBarPrefab: {fileID: 878835391134299620, guid: 53063b90c37b37f4d822a406b5b8fe6b, type: 3}
   barPosition: {fileID: 5651960339538669061}
-  initialHealth: 10
-  maxHealth: 10
+  initialHealth: 100
+  maxHealth: 100
 --- !u!114 &860388459573814021
 MonoBehaviour:
   m_ObjectHideFlags: 0
