@@ -44,7 +44,7 @@ public class TrapShopManager : MonoBehaviour
             trapInstance.transform.SetParent(_currentNodeTrapSelected.transform);
 
             Trap trapPlaced = trapInstance.GetComponent<Trap>();
-            _currentNodeTrapSelected.SetTrap(trapPlaced);
+            _currentNodeTrapSelected.SetTrap(trapPlaced, trapLoaded.trapCost); // <-- aquí está el fix
         }
     }
 

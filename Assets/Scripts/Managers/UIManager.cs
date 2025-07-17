@@ -23,9 +23,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private TextMeshProUGUI lifesText;
 
     //Desde aca lo de Trampas
-    [SerializeField] private TextMeshProUGUI trapUpgradeText;
-    [SerializeField] private TextMeshProUGUI trapSellText;
-    [SerializeField] private TextMeshProUGUI trapLevelText;
+    [SerializeField] private TextMeshProUGUI trapSellText; //solo quedo lo de la reventa
 
 
 
@@ -114,17 +112,6 @@ public class UIManager : Singleton<UIManager>
 
     // ==================== TRAP ====================
 
-    public void UpgradeTrap()
-    {
-        var upgrade = _currentTrapNodeSelected.Trap.GetComponent<TrapUpgrade>();
-        if (upgrade != null)
-        {
-            upgrade.UpgradeTrap();
-            UpdateTrapUpgradeText(upgrade);
-            UpdateTrapLevel(upgrade);
-            UpdateTrapSellValue(upgrade);
-        }
-    }
 
     public void SellTrap()
     {
@@ -139,28 +126,13 @@ public class UIManager : Singleton<UIManager>
         nodeTrapUIPanel.SetActive(true); // <-- usamos el panel de mejora, no el de compra
         trapShopPanel.SetActive(false);  // por si estaba abierto
 
-        var upgrade = _currentTrapNodeSelected.Trap.GetComponent<TrapUpgrade>();
-        if (upgrade != null)
-        {
-            UpdateTrapUpgradeText(upgrade);
-            UpdateTrapLevel(upgrade);
-            UpdateTrapSellValue(upgrade);
-        }
-    }
+        // Solo mostramos el valor de reventa
+        int sellValue = _currentTrapNodeSelected.Trap != null
+            ? Mathf.RoundToInt(_currentTrapNodeSelected.InitialCost * 0.5f)
+            : 0;
 
-    private void UpdateTrapUpgradeText(TrapUpgrade upgrade)
-    {
-        trapUpgradeText.text = upgrade.GetUpgradeCost().ToString();
-    }
+        trapSellText.text = sellValue.ToString();
 
-    private void UpdateTrapLevel(TrapUpgrade upgrade)
-    {
-        trapLevelText.text = $"Level {upgrade.GetCurrentLevel()}";
-    }
-
-    private void UpdateTrapSellValue(TrapUpgrade upgrade)
-    {
-        trapSellText.text = upgrade.GetSellValue().ToString();
     }
 
 

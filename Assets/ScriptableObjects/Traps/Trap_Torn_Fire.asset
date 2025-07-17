@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 366fab3b785c1da4cbc1ac7597b9a82f, type: 3}
   m_Name: Trap_Torn_Fire
   m_EditorClassIdentifier: 
-  trapPrefab: {fileID: 8452068128369303166, guid: 9cfdaabf19486b84babc31591237a6e3, type: 3}
+  trapPrefab: {fileID: 8801989884369512973, guid: 9cfdaabf19486b84babc31591237a6e3, type: 3}
   trapCost: 100
   trapShopSprite: {fileID: 21300000, guid: 55b2d9fc0f0c1fc4ba996138976d73c7, type: 3}
   idTrup: 1

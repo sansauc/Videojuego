@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 366fab3b785c1da4cbc1ac7597b9a82f, type: 3}
   m_Name: Trap_Torn_Water 2
   m_EditorClassIdentifier: 
-  trapPrefab: {fileID: 1011637051152200153, guid: be65e3941c818cf45a02e0dc9681b666, type: 3}
+  trapPrefab: {fileID: 2916607702237971497, guid: be65e3941c818cf45a02e0dc9681b666, type: 3}
   trapCost: 200
   trapShopSprite: {fileID: 21300000, guid: f3db7e69a43b456419defb8d4467686d, type: 3}
   idTrup: 2

@@ -12,6 +12,9 @@ public class NodeTrap : MonoBehaviour
 
     public Trap Trap { get; private set; }
 
+    public int InitialCost { get; private set; }
+
+
     private float _rangeSize;
     private Vector3 _rangeOriginalSize;
 
@@ -26,9 +29,10 @@ public class NodeTrap : MonoBehaviour
     }
 
 
-    public void SetTrap(Trap trap)
+    public void SetTrap(Trap trap, int cost)
     {
         Trap = trap;
+        InitialCost = cost;
     }
 
     public bool IsEmpty()
@@ -49,11 +53,9 @@ public class NodeTrap : MonoBehaviour
     {
         if (!IsEmpty())
         {
-            TrapUpgrade trapUpgrade = Trap.GetComponent<TrapUpgrade>();
-            if (trapUpgrade != null)
-            {
-                CurrencySystem.Instance.AddCoins(trapUpgrade.GetSellValue());
-            }
+            // ✅ Se calcula el valor de reventa directamente a partir del costo inicial
+            int sellValue = Mathf.RoundToInt(InitialCost * 0.5f);
+            CurrencySystem.Instance.AddCoins(sellValue);
 
             Destroy(Trap.gameObject);
             Trap = null;
