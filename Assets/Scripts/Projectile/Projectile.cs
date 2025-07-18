@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour
 
     public static Action<Enemy, float> OnEnemyHit;
 
-    [SerializeField] private int idProjectile;
+    [SerializeField] protected int idProjectile;
 
     public int IdProjectile => idProjectile; // Getter expuesto
 
@@ -27,7 +27,7 @@ public class Projectile : MonoBehaviour
     {
         (1, 2),
         (2, 2),
-        (3, 2)
+        (3, 2),
     };
 
     public static bool ShouldIgnore(int projId, int enemyId)
@@ -77,7 +77,6 @@ public class Projectile : MonoBehaviour
             // 🚫 Agregar condición para ignorar el daño entre ciertos IDs
             if (!ignorePairs.Contains((idProjectile, _enemyTarget.IdEnemy)))
             {
-                Debug.Log($"✅ Projectile {idProjectile} impactó al Enemy {_enemyTarget.IdEnemy} con {Damage} de daño");
 
                 OnEnemyHit?.Invoke(_enemyTarget, Damage);
                 _enemyTarget.EnemyHealth.DealDamage(Damage);

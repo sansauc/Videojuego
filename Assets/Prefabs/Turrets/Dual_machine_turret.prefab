@@ -70,8 +70,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -446216597
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 436529fef7027134a9ad524bf85fdef3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectileSpawnPosition: {fileID: 6844368372255667834}
   delayBtwAttacks: 0.2
-  damage: 2
+  damage: 4
   isDualMachine: 1
   spreadRange: 5
 --- !u!114 &7604095549076892045
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c2a743b04f30bc429f98df9f44c2feb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3135652073532631198, guid: b62c2c2eebf726d43ab78fb11ee9a1f1, type: 3}
+  prefab: {fileID: 2516504766513129836, guid: a0ff8b535d4157845867298f47b14d0e, type: 3}
   poolSize: 10
 --- !u!58 &5225136817350609186
 CircleCollider2D:
@@ -355,7 +355,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -446216597
   m_SortingLayer: 7
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 032eb60389edf914c953adc2a62683f0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

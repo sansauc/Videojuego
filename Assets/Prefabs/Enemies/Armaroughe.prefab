@@ -127,6 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idEnemy: 3
   moveSpeed: 3
+  coinReward: 50
 --- !u!114 &2805719719363656062
 MonoBehaviour:
   m_ObjectHideFlags: 0

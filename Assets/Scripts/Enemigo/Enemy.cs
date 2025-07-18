@@ -12,8 +12,12 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private int idEnemy;
     [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private int coinReward = 1;
+
 
     public int IdEnemy => idEnemy; // propiedad solo de lectura (getter)
+
+    public int CoinReward => coinReward;
 
     /// <summary>
     /// The waypoint reference
