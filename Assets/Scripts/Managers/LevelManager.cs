@@ -17,6 +17,35 @@ public class LevelManager : Singleton<LevelManager>
 
     private int maxWaves; // ✅ Para controlar el número total de oleadas
 
+    private Coroutine countdownCoroutine; //Para el contador de inicio de las oleadas
+
+    //Metodos para Iniciar la Oleada
+
+    public void StartWaveCountdown(float countdownSeconds)
+    {
+        if (countdownCoroutine != null)
+            StopCoroutine(countdownCoroutine);
+
+        countdownCoroutine = StartCoroutine(WaveCountdownRoutine(countdownSeconds));
+    }
+
+    private IEnumerator WaveCountdownRoutine(float countdown)
+    {
+        float timer = countdown;
+
+        while (timer > 0)
+        {
+            UIManager.Instance.UpdateWaveCountdown(Mathf.CeilToInt(timer)); // Actualiza UI
+            yield return new WaitForSeconds(1f);
+            timer -= 1f;
+        }
+
+        UIManager.Instance.UpdateWaveCountdown(0); // Muestra "0" segundos
+
+        // 🔥 Inicia la oleada
+        FindObjectOfType<Spawner>()?.StartFirstWave(); // Solo si Spawner tiene este método
+    }
+
     private void Start()
     {
         TotalLives = lives;
@@ -32,6 +61,8 @@ public class LevelManager : Singleton<LevelManager>
         {
             Debug.LogError("Spawner no encontrado en la escena.");
         }
+
+        StartWaveCountdown(40f);
     }
 
     private void ReduceLives()
@@ -39,12 +70,18 @@ public class LevelManager : Singleton<LevelManager>
         TotalLives--;
         Debug.Log($"Vidas restantes: {TotalLives}");
 
-        if (TotalLives <= 0)
+        if (TotalLives == 0)
         {
             TotalLives = 0;
-            Debug.Log("¡Game Over!");
+            this.GameOver();
         }
     }
+
+    private void GameOver()
+    {
+        UIManager.Instance.ShowGameOverPanel();
+    }
+
 
     private void WaveCompleted()
     {
@@ -53,11 +90,11 @@ public class LevelManager : Singleton<LevelManager>
             CurrentWave++;
             Debug.Log($"Oleada completada. Próxima oleada: {CurrentWave}");
         }
-        else
-        {
-            Debug.Log("✅ Todas las oleadas han sido completadas. ¡Nivel superado!");
-            // Aquí podrías activar pantalla de victoria, pasar de nivel, etc.
-        }
+    }
+
+    private void Victory()
+    {
+        UIManager.Instance.ShowNextLevelPanel();
     }
 
     private void OnEnable()

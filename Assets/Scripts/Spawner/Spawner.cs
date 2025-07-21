@@ -50,7 +50,7 @@ public class Spawner : MonoBehaviour
 
     private Waypoint _waypoint;
 
-    private bool _isWaveActive = true;
+    private bool _isWaveActive = false;
 
     public int CurrentWave { get; set; }
 
@@ -64,7 +64,7 @@ public class Spawner : MonoBehaviour
         _waypoint = GetComponent<Waypoint>();
         _enemiesRamaining = currentWave.enemyCount;
         _pooler = GetPooler(); // Inicializar pooler al comienzo
-        PrepareWave();
+        //PrepareWave();
     }
 
     /**private void Update()
@@ -122,6 +122,11 @@ public class Spawner : MonoBehaviour
         Enemy enemy = newInstance.GetComponent<Enemy>();
         enemy.Waypoint = _waypoint;
         enemy.ResetEnemy();
+
+        // Aseguramos de que la referencia esté lista ANTES de activar el GameObject
+        enemy.EnemyHealth = newInstance.GetComponent<EnemyHealth>();
+
+
         enemy.transform.localPosition = _waypoint.GetWaypointPosition(0);
 
         newInstance.SetActive(true);
@@ -181,7 +186,7 @@ public class Spawner : MonoBehaviour
 
         if (currentWaveIndex + 1 >= waves.Count)
         {
-            Debug.Log("✅ Todas las oleadas han terminado.");
+            Debug.Log("✅ Todas las oleadas han terminado. Metodo NextWave en Spwaner");
             yield break;
         }
 
@@ -262,8 +267,32 @@ public class Spawner : MonoBehaviour
         if (_enemiesToSpawn == 0 && _enemiesAlive <= 0 && _isWaveActive)
         {
             _isWaveActive = false;
-            OnWaveCompleted?.Invoke();
-            StartCoroutine(NextWave());
+
+            // Si es la última oleada
+            if (currentWaveIndex == waves.Count - 1)
+            {
+                Debug.Log("🏆 ¡Victoria! Todas las oleadas completadas y enemigos eliminados.");
+                StartCoroutine(DelayedVictory()); // 👈 Corrutina con delay visual
+            }
+            else
+            {
+                OnWaveCompleted?.Invoke();
+                StartCoroutine(NextWave());
+            }
         }
     }
+
+    private IEnumerator DelayedVictory()
+    {
+        yield return new WaitForSeconds(1f); // ⏳ Tiempo para mostrar animación o muerte final
+        LevelManager.Instance.SendMessage("Victory"); // o directamente LevelManager.Instance.Victory();
+    }
+
+
+    public void StartFirstWave()
+    {
+        Debug.Log("🚀 Primera oleada iniciada tras el conteo");
+        PrepareWave();
+    }
+
 }
