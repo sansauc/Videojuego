@@ -8,7 +8,7 @@ public class MenuInicio : MonoBehaviour
 
     public void ModoAtacante()
     {
-        Debug.Log("Atacando ....");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2);
     }
 
     public void ModoDefensor()

@@ -14,6 +14,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private int coinReward = 1;
 
+    [SerializeField] private int EnemyCost; 
+
 
     public int IdEnemy => idEnemy; // propiedad solo de lectura (getter)
 
