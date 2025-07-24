@@ -17,4 +17,5 @@ MonoBehaviour:
   Description: Ideal para desactivar trampas. Pertenece a la Varnguardia.
   Cost: 5
   Sprite: {fileID: 21300000, guid: 2cbf57a6fe7e4b247bf3864cf7099fd3, type: 3}
+  Prefab: {fileID: 7295242523975455168, guid: 329a955b17b459544854b3ef9db45df3, type: 3}
   Position: 0
