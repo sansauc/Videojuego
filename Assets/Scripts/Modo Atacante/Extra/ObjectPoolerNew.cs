@@ -8,9 +8,8 @@ public class ObjectPoolerNew : MonoBehaviour
     [SerializeField] private GameObject prefab;
     [SerializeField] private int poolSize = 10;
 
-    private List<GameObject> _pool= new();
+    private List<GameObject> _pool = new();
     private GameObject _poolContainer;
-
 
     public void Initialize()
     {

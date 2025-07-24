@@ -17,6 +17,9 @@ public class NewSpawner : MonoBehaviour
 
     private int _enemiesAlive;
 
+    // Eventos de victoria/derrota demoníaca
+    public static event Action OnDemonVictory;
+    public static event Action OnDemonDefeat;
 
     private void Awake()
     {
@@ -109,6 +112,7 @@ public class NewSpawner : MonoBehaviour
         }
 
         Debug.Log("✅ Todas las oleadas se han spawneado correctamente.");
+        EvaluateBattleResult();
     }
 
     private void SpawnEnemy(EnemyData data)
@@ -159,7 +163,20 @@ public class NewSpawner : MonoBehaviour
         if (_enemiesAlive <= 0)
         {
             Debug.Log("✅ Todos los enemigos de la suboleada han sido eliminados o llegaron al final.");
-            // No hace falta iniciar siguiente oleada aquí, ya lo hace el `while (_enemiesAlive > 0)` en la corrutina.
+
+        }
+    }
+    private void EvaluateBattleResult()
+    {
+        if (LevelManagerNew.Instance.CurrentLives <= 0)
+        {
+            Debug.Log("🎉 ¡Victoria demoníaca! El jugador humano se quedó sin vidas.");
+            OnDemonVictory?.Invoke();
+        }
+        else
+        {
+            Debug.Log("☠️ Derrota demoníaca... No lograste eliminar todas las vidas humanas.");
+            OnDemonDefeat?.Invoke();
         }
     }
 
