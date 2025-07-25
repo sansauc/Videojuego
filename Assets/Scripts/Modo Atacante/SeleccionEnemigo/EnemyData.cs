@@ -19,5 +19,6 @@ public class EnemyData : ScriptableObject
     public string Description;
     public int Cost;
     public Sprite Sprite;
+    public GameObject Prefab;
     public EnemyPosition Position;
 }

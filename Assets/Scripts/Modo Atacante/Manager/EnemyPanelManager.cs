@@ -1,12 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class EnemyPanelManager : MonoBehaviour
 {
+    [SerializeField] private GameObject enemyShopPanel;
     [SerializeField] private Transform container;
     [SerializeField] private GameObject enemyCardPrefab;
     [SerializeField] private List<EnemyData> enemyDatabase;
+    [SerializeField] private NewSpawner newSpawner;
+
+    [SerializeField] private Button startWaveButton; // ← AÑADIR BOTÓN
+
+
 
     private List<EnemyCard> activeCards = new List<EnemyCard>();
 
@@ -44,6 +52,27 @@ public class EnemyPanelManager : MonoBehaviour
 
         return selectedEnemies;
     }
+
+
+    public void OnStartWaveButtonClicked()
+    {
+        var selected = GetSelectedEnemies();
+
+        if (selected.Count == 0)
+        {
+            Debug.LogWarning("⚠️ No se han seleccionado enemigos para iniciar la oleada.");
+            return;
+        }
+
+        newSpawner.SetupSelectedEnemies(selected);
+        newSpawner.StartWaves();
+
+        startWaveButton.interactable = false;
+        
+        if (enemyShopPanel != null)
+            enemyShopPanel.SetActive(false);
+    }
+
 }
 
 public class EnemyInstance

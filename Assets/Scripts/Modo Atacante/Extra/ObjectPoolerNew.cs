@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class ObjectPooler : MonoBehaviour, IObjectPooler
+public class ObjectPoolerNew : MonoBehaviour, IObjectPooler
 {
     [SerializeField] private GameObject prefab;
     [SerializeField] private int poolSize = 10;
@@ -11,8 +10,18 @@ public class ObjectPooler : MonoBehaviour, IObjectPooler
     private List<GameObject> _pool;
     private GameObject _poolContainer;
 
+    // Ya no hacemos nada en Awake, para evitar usar prefab nulo
     private void Awake()
     {
+        // Vacío para evitar usar prefab antes de asignarlo
+    }
+
+    // Inicializador que debes llamar para configurar el pooler
+    public void InitializePooler(GameObject newPrefab, int newPoolSize = 10)
+    {
+        prefab = newPrefab;
+        poolSize = newPoolSize;
+
         _pool = new List<GameObject>();
         _poolContainer = new GameObject($"Pool - {prefab.name}");
 
@@ -50,43 +59,13 @@ public class ObjectPooler : MonoBehaviour, IObjectPooler
 
     public  void ReturnToPool(GameObject instance)
     {
-
         instance.SetActive(false);
-
     }
+
     public  IEnumerator ReturnToPoolWithDelay(GameObject instance, float delay)
     {
         yield return new WaitForSeconds(delay);
         instance.SetActive(false);
-    }
-
-
-    /**public void SetPrefab(GameObject newPrefab)
-    {
-        prefab = newPrefab;
-
-        // Opcional: limpiar pool viejo
-        foreach (var obj in _pool)
-        {
-            Destroy(obj);
-        }
-
-        _pool.Clear();
-        CreatePooler();
-    }**/ //nuevo setprefav pooler a cont.
-
-    public void SetPrefab(GameObject newPrefab)
-    {
-        prefab = newPrefab;
-
-        // ❌ Ya no destruyas objetos aquí
-        foreach (var obj in _pool)
-        {
-            obj.SetActive(false);
-        }
-
-        _pool.Clear();
-        CreatePooler();
     }
 
     public void ClearPool()
@@ -100,6 +79,4 @@ public class ObjectPooler : MonoBehaviour, IObjectPooler
         }
         _pool.Clear();
     }
-
 }
-

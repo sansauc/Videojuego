@@ -87,6 +87,20 @@ public class TurretProjectile : MonoBehaviour
         }
     }
 
+    /**protected virtual void LoadProjectile()
+    {
+        GameObject newInstance = _pooler.GetInstanceFromPool();
+        newInstance.transform.localPosition = projectileSpawnPosition.position;
+        newInstance.transform.SetParent(projectileSpawnPosition);
+
+        _currentProjectileLoaded = newInstance.GetComponent<Projectile>();
+        _currentProjectileLoaded.TurretOwner = this;
+        _currentProjectileLoaded.ResetProjectile();
+        _currentProjectileLoaded.Damage = Damage;
+
+        newInstance.SetActive(true);
+    }**///Metodo para el modo defensor, anda perfecto, a continuacion el metodo para ambos modos
+
     protected virtual void LoadProjectile()
     {
         GameObject newInstance = _pooler.GetInstanceFromPool();
@@ -95,6 +109,7 @@ public class TurretProjectile : MonoBehaviour
 
         _currentProjectileLoaded = newInstance.GetComponent<Projectile>();
         _currentProjectileLoaded.TurretOwner = this;
+        _currentProjectileLoaded.Pooler = _pooler; // ¡Asigna el pooler aquí!
         _currentProjectileLoaded.ResetProjectile();
         _currentProjectileLoaded.Damage = Damage;
 

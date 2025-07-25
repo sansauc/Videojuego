@@ -22,6 +22,9 @@ public class Projectile : MonoBehaviour
 
     protected Enemy _enemyTarget;
 
+    public IObjectPooler Pooler { get; set; }
+
+
     // ✅ Lista estática compartida
     private static List<(int projId, int enemyId)> ignorePairs = new List<(int, int)>
     {
@@ -63,8 +66,10 @@ public class Projectile : MonoBehaviour
     {
         if (_enemyTarget == null || !_enemyTarget.gameObject.activeInHierarchy)
         {
-            ObjectPooler.ReturnToPool(gameObject);
-            TurretOwner.ResetTurretProjectile();
+            //ObjectPooler.ReturnToPool(gameObject); Asi se usaba solamente en el modo defensor, y andaba perfecto
+            //TurretOwner.ResetTurretProjectile();  Asi se usaba solamente en el modo defensor, y andaba perfecto
+            ReturnProjectileToPool(); // Esto es nuevo se agrega para usar la interfaz pooler con el modo atacante
+
             return;
         }
 
@@ -86,8 +91,28 @@ public class Projectile : MonoBehaviour
                 Debug.Log($"⚠️ Projectile {idProjectile} ignoró al Enemy {_enemyTarget.IdEnemy}");
             }
 
+            //TurretOwner.ResetTurretProjectile();
+            //ObjectPooler.ReturnToPool(gameObject);
+            ReturnProjectileToPool(); //ObjectPooler Utilizado en modo atacante
+
+        }
+    }
+
+    private void ReturnProjectileToPool()
+    {
+        if (Pooler != null)
+        {
+            Pooler.ReturnToPool(gameObject);
+        }
+        else
+        {
+            // Fallback por si acaso
+            gameObject.SetActive(false);
+        }
+
+        if (TurretOwner != null)
+        {
             TurretOwner.ResetTurretProjectile();
-            ObjectPooler.ReturnToPool(gameObject);
         }
     }
 

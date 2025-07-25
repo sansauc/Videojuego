@@ -22,6 +22,9 @@ public class EnemyHealth : MonoBehaviour
 
     private Enemy _enemy;
 
+    public static bool IsDefenderMode = true; // Valor por defecto para el modo defensor
+
+
 
     private void Start()
     {
@@ -88,8 +91,12 @@ public class EnemyHealth : MonoBehaviour
         CurrentHealth = initialHealth;
         _healthBar.fillAmount = 1f;
 
+        if (IsDefenderMode)
+        {
+            AchievementManager.Instance.AddProgressByEnemyID(_enemy.IdEnemy); // usa el ID
+        }
         // NUEVO: se suma progreso a los logros con este enemyID
-        AchievementManager.Instance.AddProgressByEnemyID(_enemy.IdEnemy); // usa el ID
+        //AchievementManager.Instance.AddProgressByEnemyID(_enemy.IdEnemy); // usa el ID
 
         /*AchievementManager.Instance.AddProgress("Kill20Ogro", 1);
         AchievementManager.Instance.AddProgress("Kill50Ogro", 1);
