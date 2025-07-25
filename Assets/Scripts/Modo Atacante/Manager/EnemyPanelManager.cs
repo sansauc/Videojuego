@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48
 
 public class EnemyPanelManager : MonoBehaviour
 {
@@ -14,6 +17,13 @@ public class EnemyPanelManager : MonoBehaviour
 
     [SerializeField] private Button startWaveButton; // ← AÑADIR BOTÓN
 
+
+
+    [SerializeField] private GameObject enemyShopPanel; //para luego poder cerrar el panel
+
+    [SerializeField] private Button startWaveButton; // Para poder iniciar la oleada
+
+    [SerializeField] private NewSpawner spawner;
 
 
     private List<EnemyCard> activeCards = new List<EnemyCard>();
@@ -52,8 +62,11 @@ public class EnemyPanelManager : MonoBehaviour
 
         return selectedEnemies;
     }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48
     public void OnStartWaveButtonClicked()
     {
         var selected = GetSelectedEnemies();
@@ -64,6 +77,7 @@ public class EnemyPanelManager : MonoBehaviour
             return;
         }
 
+<<<<<<< HEAD
         newSpawner.SetupSelectedEnemies(selected);
         newSpawner.StartWaves();
 
@@ -73,6 +87,14 @@ public class EnemyPanelManager : MonoBehaviour
             enemyShopPanel.SetActive(false);
     }
 
+=======
+        spawner.StartWave(selected); // CORREGIDO: spawner, no newSpawner
+        //startWaveButton.interactable = false;
+
+        if (enemyShopPanel != null)
+            enemyShopPanel.SetActive(false);
+    }
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48
 }
 
 public class EnemyInstance

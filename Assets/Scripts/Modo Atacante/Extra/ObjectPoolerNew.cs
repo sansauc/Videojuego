@@ -2,11 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+<<<<<<< HEAD
 public class ObjectPoolerNew : MonoBehaviour, IObjectPooler
+=======
+
+public class ObjectPoolerNew : MonoBehaviour
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48
 {
     [SerializeField] private GameObject prefab;
     [SerializeField] private int poolSize = 10;
 
+<<<<<<< HEAD
     private List<GameObject> _pool;
     private GameObject _poolContainer;
 
@@ -25,6 +31,20 @@ public class ObjectPoolerNew : MonoBehaviour, IObjectPooler
         _pool = new List<GameObject>();
         _poolContainer = new GameObject($"Pool - {prefab.name}");
 
+=======
+    private List<GameObject> _pool = new();
+    private GameObject _poolContainer;
+
+    public void Initialize()
+    {
+        if (prefab == null)
+        {
+            Debug.LogError("❌ No se asignó un prefab al pooler.");
+            return;
+        }
+
+        _poolContainer = new GameObject($"Pool - {prefab.name}");
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48
         CreatePooler();
     }
 
@@ -57,17 +77,28 @@ public class ObjectPoolerNew : MonoBehaviour, IObjectPooler
         return CreateInstance();
     }
 
+<<<<<<< HEAD
     public  void ReturnToPool(GameObject instance)
     {
         instance.SetActive(false);
     }
 
     public  IEnumerator ReturnToPoolWithDelay(GameObject instance, float delay)
+=======
+    public static void ReturnToPool(GameObject instance)
+    {
+
+        instance.SetActive(false);
+
+    }
+    public static IEnumerator ReturnToPoolWithDelay(GameObject instance, float delay)
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48
     {
         yield return new WaitForSeconds(delay);
         instance.SetActive(false);
     }
 
+<<<<<<< HEAD
     public void ClearPool()
     {
         foreach (var obj in _pool)
@@ -80,3 +111,11 @@ public class ObjectPoolerNew : MonoBehaviour, IObjectPooler
         _pool.Clear();
     }
 }
+=======
+
+    public void SetPrefab(GameObject newPrefab)
+    {
+        prefab = newPrefab;
+    }
+}
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48

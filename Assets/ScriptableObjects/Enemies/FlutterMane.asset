@@ -18,5 +18,9 @@ MonoBehaviour:
     la Oleada
   Cost: 20
   Sprite: {fileID: 21300000, guid: 4c4a28eed88b60d408c84113ec470146, type: 3}
+<<<<<<< HEAD
   Prefab: {fileID: 5958693283241840652, guid: b1a1bd306f7f0454582db2c3c85a3507, type: 3}
+=======
+  Prefab: {fileID: 3858337089769720324, guid: 6b22fcf31d61efe47b69e69078b8d965, type: 3}
+>>>>>>> 4d87c4c4b9925b4c72bea6e19678438d7b7b0a48
   Position: 1
